@@ -10,6 +10,27 @@ const path = require('path');
 
 const PORT = 8080;
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const TEMP_DIR = path.join(__dirname, '..', 'temp', 'screenshots');
+
+// S'assurer que le dossier temporaire existe
+if (!fs.existsSync(TEMP_DIR)) {
+  fs.mkdirSync(TEMP_DIR, { recursive: true });
+}
+
+// Fonction de nettoyage
+function cleanTempDir() {
+  console.log('[Server] Nettoyage des captures temporaires...');
+  if (fs.existsSync(TEMP_DIR)) {
+    const files = fs.readdirSync(TEMP_DIR);
+    for (const file of files) {
+      fs.unlinkSync(path.join(TEMP_DIR, file));
+    }
+  }
+}
+
+// Nettoyage à la fermeture
+process.on('SIGINT', () => { cleanTempDir(); process.exit(); });
+process.on('exit', () => { cleanTempDir(); });
 
 const clients = new Set();
 
@@ -100,6 +121,16 @@ wss.on('connection', (ws) => {
 
       // 2. Relais intelligent avec protection
       const targetType = ws.clientType === 'dashboard' ? 'extension' : 'dashboard';
+
+      // Sauvegarde automatique des screenshots si présents dans le message
+      if (msg.type === 'command.result' && msg.payload && msg.payload.dataUrl) {
+        const base64Data = msg.payload.dataUrl.replace(/^data:image\/\w+;base64,/, "");
+        const fileName = `screenshot_${Date.now()}.${msg.payload.format || 'png'}`;
+        const savePath = path.join(TEMP_DIR, fileName);
+        fs.writeFile(savePath, base64Data, 'base64', (err) => {
+          if (!err) console.log(`[Server] Screenshot sauvegardé temporairement : ${fileName}`);
+        });
+      }
       
       clients.forEach(client => {
         if (client !== ws && client.readyState === WebSocket.OPEN) {
