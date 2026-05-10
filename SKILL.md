@@ -409,7 +409,7 @@ For advanced, precise, multi-step workflows. **80 commands total** across 14 cat
 | Command | Purpose | Payload |
 |---------|---------|---------|
 | `agent.click` | Click element #N | `{ref: 7}` |
-| `agent.type` | Focus, clear, type text | `{ref: 7, text: "hello", clear: true}` |
+| `agent.type` | Focus, clear (clearFirst), type text | `{ref: 7, text: "hello", clearFirst: true}` |
 | `agent.hover` | Hover over element | `{ref: 7}` |
 | `agent.press` | Press key (Enter, Tab, Escape) | `{key: "Enter"}` |
 | `agent.scroll` | Scroll up/down | `{direction: "down\|up", amount: 300}` |
@@ -424,7 +424,7 @@ For advanced, precise, multi-step workflows. **80 commands total** across 14 cat
 | `dom.fillForm` | Fill multiple fields at once | `{fields: {name: "Alex", email: "..."}}` |
 | `dom.doubleClick` | Double-click | `{ref: 7}` or `{selector: "..."}` |
 | `dom.submit` | Submit a form | `{ref: 7}` or `{selector: "..."}` |
-| `dom.press` | Press key on element | `{ref: 7, key: "Enter"}` |
+| `dom.press` | Press key on element (waitForNavigation auto si Enter) | `{ref: 7, key: "Enter", waitForNavigation: true}` |
 | `dom.scrollDown` / `dom.scrollUp` | Scroll element | `{ref: 7, amount: 300}` |
 | `dom.search` | Search within DOM | `{text: "..."}` |
 | `dom.select` | Select option by selector | `{ref: 7, value: "fr"}` |
@@ -506,7 +506,7 @@ Controls consultation speeds: reading, scanning, re-reading. Mouse/keyboard have
 | `dom.html` | Inner HTML of selector | `{selector: "body"}` |
 | `dom.waitFor` | Wait for element state | `{query: ".result", state: "visible", timeout: 10000}` |
 | `dom.inspect` | Debug element by ref | `{ref: 7}` |
-| `dom.visibleText` | Visible text with filters | `{textFilter: "...", filterAny: ["a", "b"], filterLines: true, limit: 100}` |
+| `dom.visibleText` | Visible text with filters | `{textFilter: "...", filterAny: [...], filterLines: true, limit: 100, includeHidden: false}` |
 
 #### 🍪 STATE — Cookies & Viewport
 | Command | Purpose | Payload |
@@ -520,7 +520,7 @@ Controls consultation speeds: reading, scanning, re-reading. Mouse/keyboard have
 |---------|---------|---------|
 | `script.execute` | Run multiple commands in one WS message | `{commands: [...], stopOnError: true}` |
 | `misc.wait` | Wait for page event | `{ms: 3000}` or `{}` (load) |
-| `screenshot` | Save screenshot | `{}` |
+| `screenshot` | Save screenshot (full page mode dispo) | `{format: "png", fullPage: false}` |
 
 **Interpolation in batch:** Reference previous step results with `${stepN.path}`:
 ```json
@@ -530,7 +530,7 @@ Controls consultation speeds: reading, scanning, re-reading. Mouse/keyboard have
 #### 🔀 SESSION — Multi-browser isolation
 | Command | Purpose |
 |---------|---------|
-| `session.create` | Create named browser context (payload: `{id: "my-session"}`) |
+| `session.create` | Create named browser context | `{sessionId: "research-1", headless: false, profileDir: "/tmp/profile"}` |
 | `session.list` | List active sessions |
 | `trace.list` | List trace events for a session | `{sessionId: "my-session"}` |
 | `trace.save` | Save trace to disk | `{sessionId: "my-session"}` |
@@ -644,7 +644,7 @@ bridge.cmd run "navigate https://site.com" "scroll 800" "extract article"
 
 ### E. Multi-Session Research (JSON-RPC only)
 ```json
-{"id":"1","type":"session.create","payload":{"id":"research-1"}}
+{"id":"1","type":"session.create","payload":{"sessionId":"research-1"}}
 {"id":"2","type":"navigate","payload":{"url":"https://news.com"},"sessionId":"research-1"}
 {"id":"3","type":"navigate","payload":{"url":"https://competitor.com"},"sessionId":"research-2"}
 ```
