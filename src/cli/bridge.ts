@@ -45,7 +45,7 @@ function csvTerms(value: string | undefined) {
 
 export function mapCommand(type: string, pParts: string[]): any {
   switch (type) {
-    case 'navigate': return { type: 'navigate', payload: { url: pParts[0], autoAnnotate: pParts.includes('--annotate') } };
+    case 'navigate': return { type: 'navigate', payload: { url: pParts[0], autoAnnotate: pParts.includes('--annotate'), timeout: Number(pParts.find(p => p.startsWith('--timeout='))?.split('=')?.[1]) || 30000 } };
     case 'task': return { type: 'agent.task', payload: { goal: pParts.join(' ') } };
     case 'search': return { type: 'agent.search', payload: { query: pParts.join(' ') } };
     case 'hover':

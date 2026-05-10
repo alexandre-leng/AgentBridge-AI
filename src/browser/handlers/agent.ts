@@ -74,6 +74,7 @@ export function agentHandlers(ctx: HandlerContext): Record<string, Handler> {
       return {
         url,
         title,
+        elementCount: total,
         summary: `Page: ${title}\nURL: ${url}\nInteractive elements: ${total}`,
         topElements: items,
       };

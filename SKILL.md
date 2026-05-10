@@ -790,6 +790,7 @@ Typical execution: **< 1 second** for 4 commands.
 | `BRIDGE_DEFAULT_TIMEOUT_MS` | Default Playwright timeout | 15000 |
 | `BRIDGE_DEFAULT_NAV_TIMEOUT_MS` | Default navigation timeout | 20000 |
 | `BRIDGE_LOG_JSON` | JSON logs if `1` | 0 |
+| `BRIDGE_HEADLESS` | Browser headless mode (set to `false` for visible browser) | `true` |
 | `BRIDGE_LOG_LEVEL` | Minimum log level | info |
 | `BRIDGE_MCP_ALLOW_RAW` | Expose raw MCP tool `browser_command` | 0 |
 

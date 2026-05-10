@@ -173,6 +173,7 @@ The bridge can be configured via `.env` or environment variables:
 | `BRIDGE_DEFAULT_TIMEOUT_MS` | Default Playwright timeout. | `15000` |
 | `BRIDGE_DEFAULT_NAV_TIMEOUT_MS` | Default Playwright navigation timeout. | `20000` |
 | `BRIDGE_LOG_JSON` | Emits logs as JSON when set to `1`. | `0` |
+| `BRIDGE_HEADLESS` | Browser headless mode. `false` = visible browser window. | `true` |
 | `BRIDGE_LOG_LEVEL` | Minimum log level: `debug`, `info`, `warn`, `error`. | `info` |
 | `BRIDGE_MCP_ALLOW_RAW` | Exposes low-level MCP `browser_command` when set to `1`. | `0` |
 

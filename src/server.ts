@@ -10,7 +10,8 @@ import { controller } from './browser/controller.js';
 
 const port = Number(process.env.PORT ?? 8080);
 
-await controller.launch({ headless: false });
+const headless = process.env.BRIDGE_HEADLESS !== 'false';
+await controller.launch({ headless });
 startServer(port);
 import { log } from './logger.js';
 

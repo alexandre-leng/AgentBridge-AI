@@ -30,11 +30,23 @@ export function extractionHandlers(ctx: HandlerContext): Record<string, Handler>
       }
       if (type === 'search-results') {
         const results = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('h3')).map(h => ({
-            title: h.innerText,
-            url: h.closest('a')?.href || h.parentElement?.querySelector('a')?.href,
-            snippet: h.parentElement?.innerText?.slice(0, 300)
-          })).filter(x => x.title && x.url);
+          const isAd = (el: Element): boolean => {
+            const p = el.closest('[class*="ad"], [id*="ad"], [class*="sponsored"], [data-text-ad]');
+            return p !== null;
+          };
+          const isTrackingUrl = (url: string): boolean => {
+            return /[?&](ad|ads|sponsored)/i.test(url) || url.includes('/y.js?');
+          };
+          return Array.from(document.querySelectorAll('h3')).map(h => {
+            const link = h.closest('a') || h;
+            const url = h.closest('a')?.href || h.parentElement?.querySelector('a')?.href || '';
+            return {
+              title: h.innerText,
+              url,
+              snippet: h.parentElement?.innerText?.slice(0, 300) || '',
+              _skip: !url || isTrackingUrl(url) || isAd(link)
+            };
+          }).filter(x => x.title && !x._skip).map(({ _skip, ...r }) => r);
         });
         return { type, results };
       } else if (type === 'form') {
@@ -62,12 +74,21 @@ export function extractionHandlers(ctx: HandlerContext): Record<string, Handler>
         return { type, article };
       } else if (type === 'table') {
         const tables = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('table')).map(table => {
-            const rows = Array.from(table.querySelectorAll('tr')).slice(0, 20);
-            return rows.map(tr => Array.from(tr.querySelectorAll('td, th')).map(td => td.textContent?.trim()));
-          });
+          const htmlTables = Array.from(document.querySelectorAll('table')).map(table => ({
+            type: 'html',
+            rows: Array.from(table.querySelectorAll('tr')).slice(0, 20)
+              .map(tr => Array.from(tr.querySelectorAll('td, th')).map(td => td.textContent?.trim()))
+          }));
+          const gridTables = Array.from(document.querySelectorAll('[role="grid"], [role="table"]')).map(grid => ({
+            type: 'aria',
+            rows: Array.from(grid.querySelectorAll('[role="row"]')).slice(0, 20)
+              .map(row => Array.from(row.querySelectorAll('[role="cell"], [role="gridcell"], [role="columnheader"]'))
+                .map(cell => cell.textContent?.trim()))
+          }));
+          return [...htmlTables, ...gridTables];
         });
-        return { type, tables };
+        const message = tables.length === 0 ? 'No tables or grids found on this page.' : undefined;
+        return { type, tables, message };
       } else if (type === 'google-maps') {
         const raw = await page.evaluate(() => {
           return Array.from(document.querySelectorAll('[data-result-id], .VwiC3b, .tF2Cxc')).map(el => ({
