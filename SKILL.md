@@ -4,7 +4,7 @@ description: |
   Browser automation via OpenClaw Browser Bridge.
   Default: MCP server (9 tools, simple). Advanced: JSON-RPC (80 commands, precise).
   Navigate, annotate, click, type, extract, human-like behavior.
-version: 3.2.0
+version: 3.2.2
 ---
 
 # 🦾 Skill: OpenClaw Browser Bridge
@@ -884,4 +884,4 @@ For environment variables and security hardening:
 
 ---
 
-*Skill version: 3.2.0 | Bridge version: 3.2+ | Last updated: 2026-05-05*
+*Skill version: 3.2.2 | Bridge version: 3.2+ | Last updated: 2026-05-18*
