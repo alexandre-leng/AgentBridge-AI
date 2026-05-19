@@ -1,5 +1,5 @@
 {
-  "name": "@alexandre-leng/agentbridge-ai",
+  "name": "browser-agentbridge-ai",
   "version": "3.2.4",
   "description": "Human-paced browser control bridge based on Playwright",
   "type": "module",
@@ -54,7 +54,6 @@
     "url": "git+https://github.com/alexandre-leng/AgentBridge-AI.git"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com/"
+    "access": "public"
   }
 }
