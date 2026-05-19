@@ -2,7 +2,8 @@
 
 > **The high-fidelity browser control layer for AI Agents.**
 > Precise, Human-like, and Production-ready.
-> https://github.com/alexandre-leng/AgentBridge-AI
+>
+https://github.com/alexandre-leng/AgentBridge-AI
 > 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Playwright](https://img.shields.io/badge/Powered%20by-Playwright-00ad5a.svg)](https://playwright.dev/)
