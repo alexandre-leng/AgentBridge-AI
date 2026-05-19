@@ -22,7 +22,7 @@ mkdirSync(join(process.cwd(), 'logs', 'screenshots'), { recursive: true });
 const headless = process.env.BRIDGE_HEADLESS !== 'false';
 await controller.launch({ headless });
 startServer(port);
-log('info', 'bridge server started', { port, host, headless, homeUrl, version: '3.2.8' });
+log('info', 'bridge server started', { port, host, headless, homeUrl, version: VERSION });
 setTimeout(async () => {
   try {
     const page = await controller.page();
