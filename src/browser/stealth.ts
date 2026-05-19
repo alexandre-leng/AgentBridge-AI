@@ -256,5 +256,101 @@ export const STEALTH_SCRIPT = /* js */ `
       Object.defineProperty(window, 'outerHeight', { get: () => window.innerHeight + 88, configurable: true });
     }
   } catch (_) {}
+
+  // ── 11. navigator.connection — simulate real network connection ────────────
+  try {
+    if (!navigator.connection) {
+      Object.defineProperty(navigator, 'connection', {
+        get: () => ({
+          effectiveType: '4g',
+          rtt: 50 + Math.floor(Math.random() * 100),
+          downlink: 5 + Math.random() * 5,
+          saveData: false,
+          onchange: null,
+        }),
+        configurable: true,
+      });
+    }
+  } catch (_) {}
+
+  // ── 12. navigator.credentials — real browsers expose this ──────────────────
+  try {
+    if (!navigator.credentials) {
+      Object.defineProperty(navigator, 'credentials', {
+        get: () => ({
+          get: () => Promise.resolve(null),
+          store: () => Promise.resolve(),
+          create: () => Promise.resolve(null),
+          preventSilentAccess: () => Promise.resolve(),
+        }),
+        configurable: true,
+      });
+    }
+  } catch (_) {}
+
+  // ── 13. navigator.mediaCapabilities ────────────────────────────────────────
+  try {
+    if (!navigator.mediaCapabilities) {
+      Object.defineProperty(navigator, 'mediaCapabilities', {
+        get: () => ({
+          decodingInfo: () => Promise.resolve({ supported: true, smooth: true, powerEfficient: true }),
+          encodingInfo: () => Promise.resolve({ supported: true, smooth: true, powerEfficient: true }),
+        }),
+        configurable: true,
+      });
+    }
+  } catch (_) {}
+
+  // ── 14. navigator.pdfViewerEnabled ─────────────────────────────────────────
+  try {
+    Object.defineProperty(navigator, 'pdfViewerEnabled', {
+      get: () => true,
+      configurable: true,
+    });
+  } catch (_) {}
+
+  // ── 15. AudioContext fingerprint protection ────────────────────────────────
+  try {
+    const origOfflineCtx = OfflineAudioContext.prototype.startRendering;
+    if (origOfflineCtx) {
+      OfflineAudioContext.prototype.startRendering = function () {
+        return origOfflineCtx.call(this).then((buffer) => {
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < data.length; i += 100) {
+            data[i] = data[i] + (Math.random() - 0.5) * 0.00001;
+          }
+          return buffer;
+        });
+      };
+    }
+  } catch (_) {}
+
+  // ── 16. Screen pixel depth consistency ─────────────────────────────────────
+  try {
+    if (screen.colorDepth === 0) {
+      Object.defineProperty(screen, 'colorDepth', { get: () => 24, configurable: true });
+    }
+    if (screen.pixelDepth === 0) {
+      Object.defineProperty(screen, 'pixelDepth', { get: () => 24, configurable: true });
+    }
+  } catch (_) {}
+
+  // ── 17. navigator.deviceMemory fallback ────────────────────────────────────
+  try {
+    if (navigator.deviceMemory === undefined) {
+      Object.defineProperty(navigator, 'deviceMemory', { get: () => 8, configurable: true });
+    }
+  } catch (_) {}
+
+  // ── 18. KeyboardEvent keyCode / charCode (legacy compat) ───────────────────
+  try {
+    const origEvent = Object.getOwnPropertyDescriptor(KeyboardEvent.prototype, 'keyCode');
+    if (origEvent && origEvent.get && origEvent.get() < 0) {
+      Object.defineProperty(KeyboardEvent.prototype, 'keyCode', {
+        get: function () { return this.which || 0; },
+        configurable: true,
+      });
+    }
+  } catch (_) {}
 })();
 `;
