@@ -46,7 +46,8 @@ describe('human utilities', () => {
   it('humanType should call keyboard.type for each character', async () => {
     const mockPage = {
       keyboard: {
-        type: vi.fn().mockResolvedValue(undefined)
+        type: vi.fn().mockResolvedValue(undefined),
+        press: vi.fn().mockResolvedValue(undefined)
       }
     } as any;
 
